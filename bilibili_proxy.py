@@ -33,12 +33,54 @@ reqdata = []
 for bv in bvid:
     stime = str(int(time.time()))
     print("正在获取data，请耐心等待。。。")
-    while True:
-        resp = requests.get("http://api.bilibili.com/x/web-interface/view?bvid={}".format(bv),headers=headers)
-        resp_json = resp.json()
-        if "data" in resp_json:
-            getdata = resp_json["data"]
-            break
+    retry_count = 0
+    max_retries = 5
+    getdata = None
+    while retry_count < max_retries:
+        try:
+            # 不使用代理直接请求，避免代理问题
+            temp_headers = headers.copy()
+            temp_headers['User-Agent'] = UserAgent().random
+            resp = requests.get("http://api.bilibili.com/x/web-interface/view?bvid={}".format(bv),
+                                  headers=temp_headers,
+                                  timeout=10)
+
+            # 检查响应状态码
+            if resp.status_code != 200:
+                print(f"请求失败，状态码：{resp.status_code}，重试中... ({retry_count+1}/{max_retries})")
+                retry_count += 1
+                time.sleep(2)
+                continue
+
+            # 检查响应内容是否为空
+            if not resp.text.strip():
+                print("响应内容为空，重试中... ({}/{})".format(retry_count+1, max_retries))
+                retry_count += 1
+                time.sleep(2)
+                continue
+
+            resp_json = resp.json()
+
+            if "data" in resp_json:
+                getdata = resp_json["data"]
+                print("成功获取视频信息：{}".format(getdata.get("title", "未知标题")))
+                break
+            else:
+                print(f"响应中缺少 data 字段，API 返回：{resp_json}，重试中... ({retry_count+1}/{max_retries})")
+                retry_count += 1
+                time.sleep(2)
+        except requests.exceptions.JSONDecodeError as e:
+            print(f"JSON 解析失败，响应内容：{resp.text[:200]}，重试中... ({retry_count+1}/{max_retries})")
+            retry_count += 1
+            time.sleep(2)
+        except requests.exceptions.RequestException as e:
+            print(f"请求异常：{str(e)}，重试中... ({retry_count+1}/{max_retries})")
+            retry_count += 1
+            time.sleep(2)
+
+    if retry_count >= max_retries or getdata is None:
+        print("错误：无法获取视频 {} 的信息，已尝试 {} 次".format(bv, max_retries))
+        continue
     data= {
         'aid':getdata["aid"],
         'cid':getdata["cid"],
