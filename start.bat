@@ -50,8 +50,8 @@ echo [步骤 2/3] 已获取 %PROXY_COUNT% 个代理
 echo [步骤 3/3] 开始获取 BV 号 %BV_ID% 的数据...
 echo.
 
-:: 直接调用 bilibili_proxy.py 并传入 BV 号参数
-python bilibili_proxy.py %BV_ID%
+:: 使用引号包裹参数，避免特殊字符问题
+python bilibili_proxy.py "%BV_ID%"
 
 echo.
 echo ========================================
