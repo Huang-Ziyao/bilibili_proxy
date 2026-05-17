@@ -1,1 +1,1 @@
-(bilibili_proxy.py is a source file, so no need to add anything to .gitignore)
+Nothing needs to be added to the .gitignore file based on the provided file changes. The modification of 'start.bat' does not require any new ignore rules, as it appears to be a source/config file rather than a build artifact, dependency, or temporary file.

@@ -6,7 +6,8 @@ echo ========================================
 echo.
 
 :: 获取用户输入的 BV 号
-set /p BV_ID="请输入 BV 号 (例如：BV1xx411c7mD): "
+echo 请输入 BV 号 (例如：BV1xx411c7mD): 
+set /p BV_ID=
 
 if "%BV_ID%"=="" (
     echo [错误] BV 号不能为空！
