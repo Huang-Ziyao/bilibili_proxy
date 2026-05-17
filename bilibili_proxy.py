@@ -3,14 +3,16 @@ import time
 import requests
 import threading
 from fake_useragent import UserAgent
-
+import sys
 
 #使用前确保proxy.txt中有可用代理
 
-
 #视频bv号放这里，格式如下
-
-bvid=["xxxx","xxxx"]
+#如果通过命令行参数传入，则使用参数；否则使用默认列表
+if len(sys.argv) > 1:
+    bvid = [sys.argv[1]]
+else:
+    bvid=["xxxx","xxxx"]
 
 
 
